@@ -110,7 +110,7 @@ class Game {
 
                 $remainingDiceCount = $this->dicePerTurn;
 
-                $this->announce("\nstarting turn for '".$currPlayer->getName());
+                $this->announce("\nstarting turn for '".$currPlayer->getName()."'");
 
                 while ($remainingDiceCount != 0) {
 
