@@ -98,7 +98,7 @@ class Game {
         // run one round for each player
         for ($turnNum = 1; $turnNum <= count($this->players); $turnNum++) {
 
-            $this->announce("starting round $turnNum");
+            $this->announce("\nstarting round $turnNum");
             $firstPlayer = $this->playerOrder[0];
             $firstPlayerName = $this->players[$firstPlayer]->getName();
             $this->announce("player $firstPlayer ($firstPlayerName) has the first turn");
@@ -109,6 +109,8 @@ class Game {
                 $currPlayer = $this->players[$playerNum];
 
                 $remainingDiceCount = $this->dicePerTurn;
+
+                $this->announce("\nstarting turn for '".$currPlayer->getName());
 
                 while ($remainingDiceCount != 0) {
 
@@ -181,10 +183,10 @@ class Game {
         }
 
         if (count($winners) > 1) {
-            $this->announce("The winners are...");
+            $this->announce("\nThe winners are...");
         }
         else {
-            $this->announce("The winner is...");
+            $this->announce("\nThe winner is...");
         }
         foreach ($winners as $i) {
             $winner = $this->players[$i];
@@ -202,7 +204,7 @@ class Game {
         return $turnScore;
     }
 
-    private function isRollsToKeepValid($rollsToKeep) {
+    public function isRollsToKeepValid($rollsToKeep) {
         foreach ($rollsToKeep as $i => $willKeepRoll) {
             if ($willKeepRoll) {
                 return true;

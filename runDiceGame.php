@@ -6,6 +6,7 @@ use \DiceGame\Game;
 use \DiceGame\Dice;
 use \DiceGame\Player;
 use \DiceGame\Player\AlwaysPicksFirst;
+use \DiceGame\Player\RandomlyPickRolls;
 use \DiceGame\ScoringRules;
 
 
@@ -21,7 +22,7 @@ $game->setDice($d6);
 
 $p1 = new Player\AlwaysPickFirstRoll('Aardvark');
 $game->addPlayer($p1);
-$p2 = new Player\AlwaysPickFirstRoll('Bacon');
+$p2 = new Player\RandomlyPickRolls('Bacon');
 $game->addPlayer($p2);
 $p3 = new Player\AlwaysPickFirstRoll('Canyon');
 $game->addPlayer($p3);

@@ -7,9 +7,9 @@ abstract class Player {
 
     private $name;
 
-    private $gameState = array();
-    private $gameUpdates = array();
-    private $game;
+    protected $gameState = array();
+    protected $gameUpdates = array();
+    protected $game;
 
     public function __construct($name) {
         $this->name = $name;
