@@ -23,7 +23,7 @@ class Dice {
   }
 
   public function roll() {
-      return rand(0, $this->size);
+      return rand(1, $this->size);
   }
 
 }
