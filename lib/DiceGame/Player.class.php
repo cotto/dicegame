@@ -3,7 +3,7 @@
 namespace DiceGame;
 
 
-class Player {
+abstract class Player {
 
     private $name;
 
@@ -15,11 +15,11 @@ class Player {
         $this->name = $name;
     }
 
-    public function setGame($g) {
-        $this->game = $g;
+    public function setGame($game) {
+        $this->game = $game;
     }
 
-    public function name() {
+    public function getName() {
         return $this->name;
     }
 
@@ -29,5 +29,18 @@ class Player {
     }
 
 
+    public function askWhichRollsToKeep($rolls) {
+        $rollValues = array();
+        foreach ($rolls as $i => $rollNumber) {
+            $rollValues[$i] = $this->game->getScoringRules()->rollValue($rollNumber);
+        }
+
+        $rollsToKeep = $this->decideWhichRollsToKeep($rollValues);
+        return $rollsToKeep;
+    }
+
+    abstract protected function decideWhichRollsToKeep($rollValues);
+
+    abstract public function getStrategyName();
 
 }

@@ -5,6 +5,7 @@ require_once 'autoloader.php';
 use \DiceGame\Game;
 use \DiceGame\Dice;
 use \DiceGame\Player;
+use \DiceGame\Player\AlwaysPicksFirst;
 use \DiceGame\ScoringRules;
 
 
@@ -18,13 +19,13 @@ $game->setScoringRules($scoringRules);
 $d6 = new Dice(6);
 $game->setDice($d6);
 
-$p1 = new Player('Aardvark');
+$p1 = new Player\AlwaysPickFirstRoll('Aardvark');
 $game->addPlayer($p1);
-$p2 = new Player('Bacon');
+$p2 = new Player\AlwaysPickFirstRoll('Bacon');
 $game->addPlayer($p2);
-$p3 = new Player('Canyon');
+$p3 = new Player\AlwaysPickFirstRoll('Canyon');
 $game->addPlayer($p3);
-$p4 = new Player('Deer');
+$p4 = new Player\AlwaysPickFirstRoll('Deer');
 $game->addPlayer($p4);
 
 $game->playGame();

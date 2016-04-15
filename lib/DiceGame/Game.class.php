@@ -44,6 +44,10 @@ class Game {
         $this->scoringRules = $scoringRules;
     }
 
+    public function getScoringRules() {
+        return $this->scoringRules;
+    }
+
     public function addPlayer($player) {
         $this->players[] = $player;
         $this->scores[] = 0;
@@ -96,7 +100,7 @@ class Game {
 
             $this->announce("starting round $turnNum");
             $firstPlayer = $this->playerOrder[0];
-            $firstPlayerName = $this->players[$firstPlayer]->name();
+            $firstPlayerName = $this->players[$firstPlayer]->getName();
             $this->announce("player $firstPlayer ($firstPlayerName) has the first turn");
 
             // give each player a turn
@@ -104,32 +108,118 @@ class Game {
 
                 $currPlayer = $this->players[$playerNum];
 
-                // roll dice
-                $diceRolls = array();
-                foreach (range(0, $this->dicePerTurn) as $n) {
-                    $diceRolls[] = $this->dice->roll();
+                $remainingDiceCount = $this->dicePerTurn;
+
+                while ($remainingDiceCount != 0) {
+
+                    // roll dice
+                    $diceRolls = array();
+                    foreach (range(1, $remainingDiceCount) as $n) {
+                        $diceRolls[] = $this->dice->roll();
+                    }
+                    $this->announce("rolls for player $playerNum: ".join($diceRolls, ','));
+                    
+                    // tell all players about the initial roll
+                    $this->tellPlayers(array(
+                        'eventName'  => 'roll',
+                        'playerName' => $currPlayer->getName(),
+                        'diceRolls'  => $diceRolls,
+                    ));
+
+                    // ask player which dice she wants to keep
+                        // e.g. "keep 0, 1, 3"
+                    $rollsToKeep = $currPlayer->askWhichRollsToKeep($diceRolls);
+                    $this->note("player will keep the following rolls: ".join($rollsToKeep, ','));
+
+                    // validate that the player asked to keep at least one die
+                    if (!$this->isRollsToKeepValid($rollsToKeep)) {
+                        // TODO: handle this more gracefully.
+                        throw new Exception($currPlayer->getName()." attempted to select 0 rolls and killed the game");
+                    }
+
+                    // calculate the score 
+                    $turnScore = $this->getTurnScore($diceRolls, $rollsToKeep);
+                    $this->note("adding $turnScore to player's total points");
+                    $this->scores[$playerNum] += $turnScore;
+
+                    // announce this player's move
+                    $this->tellPlayers(array(
+                        'eventName'  => 'move',
+                        'playerName' => $currPlayer->getName(),
+                        'diceRolls'  => $diceRolls,
+                        'rollsKept'  => $rollsToKeep,
+                        'totalScore' => $this->scores[$playerNum],
+                    ));
+
+                    $remainingDiceCount = $this->getDiceRemaining($rollsToKeep);
+                    $this->note("remaining dice count is $remainingDiceCount");
                 }
-                $this->announce("initial rolls for player $playerNum: ".join($diceRolls, ','));
+                $this->note("player's score is now ".$this->scores[$playerNum]);
 
-                // tell all other players what this player rolled
-                // tell this player what she rolled
-                // ask player which dice she wants to keep
-                    // e.g. "keep 0, 1, 3"
-                // validate that the player asked to keep at least one die
-                // announce this player's move
-                // calculate the score 
-
-
-                // while (something)
-                    //
-
-
-            } // end of player's turn
+            } 
 
             $this->rotatePlayerOrder();
         } // end of round
 
+        $lowScore = false;
+        $winners = array();
+
+        for($i = 0; $i < count($this->players); $i++) {
+            $playerScore = $this->scores[$i];
+            $this->announce("player $i \"".$this->players[$i]->getName()."\" scored $playerScore points");
+            if ($lowScore === false || $playerScore <= $lowScore) {
+
+                // deal with ties
+                if ($lowScore == $playerScore) {
+                    $winners[] = $i;
+                } 
+                else {
+                    $winners = array($i);
+                }
+                $lowScore = $playerScore;
+            }
+        }
+
+        if (count($winners) > 1) {
+            $this->announce("The winners are...");
+        }
+        else {
+            $this->announce("The winner is...");
+        }
+        foreach ($winners as $i) {
+            $winner = $this->players[$i];
+            $this->announce($winner->getName().", whose strategy was '".$winner->getStrategyName()."'");
+        }
     }
 
+    private function getTurnScore($diceRolls, $rollsToKeep) {
+        $turnScore = 0;
+        foreach ($diceRolls as $i => $rollNumber) {
+            if ($rollsToKeep[$i]) {
+                $turnScore += $this->getScoringRules()->rollValue($rollNumber);
+            }
+        }
+        return $turnScore;
+    }
+
+    private function isRollsToKeepValid($rollsToKeep) {
+        foreach ($rollsToKeep as $i => $willKeepRoll) {
+            if ($willKeepRoll) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // could do this with array_map but this may be clearer
+    private function getDiceRemaining($rollsToKeep) {
+        $remainingDiceCount = 0;
+        foreach ($rollsToKeep as $keepRoll) {
+            if (!$keepRoll) {
+                $remainingDiceCount++;
+            }
+        }
+        return $remainingDiceCount;
+    }
 
 }
