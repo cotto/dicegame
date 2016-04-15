@@ -15,6 +15,7 @@ class Game {
     // array of integers that determines which order players will take their turns
     private $playerOrder;
 
+    private $scoringRules;
 
     // number of dice rolled during a player's turn
     private $dicePerTurn;
@@ -39,11 +40,16 @@ class Game {
         $this->note("added a D$diceSize as the dice");
     }
 
+    public function setScoringRules($scoringRules) {
+        $this->scoringRules = $scoringRules;
+    }
+
     public function addPlayer($player) {
         $this->players[] = $player;
         $this->scores[] = 0;
         $this->playerOrder = range(0, count($this->players)-1);
         shuffle($this->playerOrder);
+        $player->setGame($this);
         $this->note("Added a player.  The new order is ".join(',', $this->playerOrder).'.');
     }
 
@@ -64,12 +70,24 @@ class Game {
         echo "$s\n";
     }
 
+    public function tellPlayers($pubData) {
+        foreach ($this->players as $player) {
+            $player->tell($pubData);
+        }
+    }
+
     private function rotatePlayerOrder() {
         $firstPlayer = array_shift($this->playerOrder);
         $this->playerOrder[] = $firstPlayer;
     }
 
     public function playGame() {
+
+        // TODO: validate that the game has been set up correctly
+        //   - scoring rules
+        //   - dice
+        //   - players
+        //   - rolls per turn
 
         $this->announce("starting game...");
 
@@ -78,20 +96,28 @@ class Game {
 
             $this->announce("starting round $turnNum");
             $firstPlayer = $this->playerOrder[0];
-            $this->announce("player $firstPlayer has the first turn");
+            $firstPlayerName = $this->players[$firstPlayer]->name();
+            $this->announce("player $firstPlayer ($firstPlayerName) has the first turn");
 
             // give each player a turn
             foreach ($this->playerOrder as $playerNum) {
 
                 $currPlayer = $this->players[$playerNum];
 
-                // roll 5 dice
+                // roll dice
                 $diceRolls = array();
                 foreach (range(0, $this->dicePerTurn) as $n) {
                     $diceRolls[] = $this->dice->roll();
                 }
                 $this->announce("initial rolls for player $playerNum: ".join($diceRolls, ','));
 
+                // tell all other players what this player rolled
+                // tell this player what she rolled
+                // ask player which dice she wants to keep
+                    // e.g. "keep 0, 1, 3"
+                // validate that the player asked to keep at least one die
+                // announce this player's move
+                // calculate the score 
 
 
                 // while (something)
