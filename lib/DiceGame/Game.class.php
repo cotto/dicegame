@@ -15,11 +15,22 @@ class Game {
     // array of integers that determines which order players will take their turns
     private $playerOrder;
 
+
+    // number of dice rolled during a player's turn
+    private $dicePerTurn;
+
     private $debugOutput = false;
 
     public function __construct() {
         $this->scores = array();
         $this->players = array();
+        $this->dicePerTurn = 0;
+    }
+
+    public function setDicePerTurn($i) {
+        // TODO: validate int
+        $this->dicePerTurn = $i;
+        $this->note("each player will roll $i dice per turn");
     }
 
     public function setDice($dice) {
@@ -41,14 +52,57 @@ class Game {
         $this->note("debug output is enabled");
     }
 
+    // print debug output
     public function note($s) {
         if ($this->debugOutput) {
             echo "$s\n";
         }
     }
 
+    // print game state information
+    public function announce($s) {
+        echo "$s\n";
+    }
+
+    private function rotatePlayerOrder() {
+        $firstPlayer = array_shift($this->playerOrder);
+        $this->playerOrder[] = $firstPlayer;
+    }
+
     public function playGame() {
-        // ...
+
+        $this->announce("starting game...");
+
+        // run one round for each player
+        for ($turnNum = 1; $turnNum <= count($this->players); $turnNum++) {
+
+            $this->announce("starting round $turnNum");
+            $firstPlayer = $this->playerOrder[0];
+            $this->announce("player $firstPlayer has the first turn");
+
+            // give each player a turn
+            foreach ($this->playerOrder as $playerNum) {
+
+                $currPlayer = $this->players[$playerNum];
+
+                // roll 5 dice
+                $diceRolls = array();
+                foreach (range(0, $this->dicePerTurn) as $n) {
+                    $diceRolls[] = $this->dice->roll();
+                }
+                $this->announce("initial rolls for player $playerNum: ".join($diceRolls, ','));
+
+
+
+                // while (something)
+                    //
+
+
+            } // end of player's turn
+
+            $this->rotatePlayerOrder();
+        } // end of round
+
     }
 
 

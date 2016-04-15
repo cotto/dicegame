@@ -9,6 +9,7 @@ use \DiceGame\Player;
 
 $game = new Game();
 $game->enableDebugOutput();
+$game->setDicePerTurn(5);
 
 $d6 = new Dice(6);
 $game->setDice($d6);
