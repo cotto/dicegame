@@ -15,6 +15,8 @@ class Game {
     // array of integers that determines which order players will take their turns
     private $playerOrder;
 
+    private $debugOutput = false;
+
     public function __construct() {
         $this->scores = array();
         $this->players = array();
@@ -22,13 +24,31 @@ class Game {
 
     public function setDice($dice) {
         $this->dice = $dice;
+        $diceSize =  $dice->size();
+        $this->note("added a D$diceSize as the dice");
     }
 
     public function addPlayer($player) {
         $this->players[] = $player;
         $this->scores[] = 0;
-        $this->playerOrder = range(0, count($this->players));
+        $this->playerOrder = range(0, count($this->players)-1);
         shuffle($this->playerOrder);
+        $this->note("Added a player.  The new order is ".join(',', $this->playerOrder).'.');
+    }
+
+    public function enableDebugOutput() {
+        $this->debugOutput = true;
+        $this->note("debug output is enabled");
+    }
+
+    public function note($s) {
+        if ($this->debugOutput) {
+            echo "$s\n";
+        }
+    }
+
+    public function playGame() {
+        // ...
     }
 
 

@@ -5,7 +5,8 @@ namespace DiceGame;
 
 class Dice {
 
-  private $diceValue;
+  // number of faces that this die has
+  private $size;
 
   public function __construct($i) {
       if (!is_int($i)) {
@@ -14,7 +15,11 @@ class Dice {
       if ($i < 2) {
           throw new Exception("Dice can't have fewer than 2 sides.");
       }
-      $this->diceValue = $i;
+      $this->size = $i;
+  }
+
+  public function size() {
+      return $this->size;
   }
 
   public function roll() {

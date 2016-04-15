@@ -8,6 +8,8 @@ use \DiceGame\Player;
 
 
 $game = new Game();
+$game->enableDebugOutput();
+
 $d6 = new Dice(6);
 $game->setDice($d6);
 
@@ -19,3 +21,5 @@ $p3 = new Player();
 $game->addPlayer($p3);
 $p4 = new Player();
 $game->addPlayer($p4);
+
+$game->playGame();
